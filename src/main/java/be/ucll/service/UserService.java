@@ -107,4 +107,14 @@ public class UserService {
         return users.get(0);
 
     }
+
+    public List<User> getAllUsersOlderThanAndNameContaining(int age, String name) {
+        List<User> users = userRepository.findByNameContainingAndAgeGreaterThan(name, age);
+
+        if (users == null || users.isEmpty()) {
+            throw new RuntimeException("No users found older than " + age + " and containing " + name + " in their name.");
+        }
+
+        return users;
+    }
 }

@@ -77,6 +77,11 @@ public class UserRestController {
         return userService.getOldestUser();
     }
 
+    @GetMapping("/age/{age}/name/{name}")
+    public List<User> getAllUsersOlderThanAndNameContaining(@PathVariable int age, @PathVariable String name) {
+        return userService.getAllUsersOlderThanAndNameContaining(age, name);
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({RuntimeException.class})
     public Map<String, String> handleRuntimeException(RuntimeException ex) {
