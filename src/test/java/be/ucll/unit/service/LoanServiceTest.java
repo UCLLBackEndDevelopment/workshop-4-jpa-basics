@@ -5,12 +5,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import be.ucll.unit.repository.UserRepositoryStub;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import be.ucll.model.Loan;
 import be.ucll.repository.LoanRepository;
-import be.ucll.repository.UserRepository;
 import be.ucll.service.LoanService;
 
 public class LoanServiceTest {
@@ -21,7 +22,7 @@ public class LoanServiceTest {
     @BeforeEach
     public void setUp() {
         loanRepository = new LoanRepository();
-        loanService = new LoanService(loanRepository, new UserRepository());
+        loanService = new LoanService(loanRepository, new UserRepositoryStub());
     }
 
     @Test

@@ -1,31 +1,44 @@
 package be.ucll.component;
 
 import be.ucll.model.User;
+import be.ucll.repository.DbInitializer;
 import be.ucll.repository.UserRepository;
+import be.ucll.unit.repository.UserRepositoryStub;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
+@Sql("classpath:schema.sql")
 public class UserTest {
+    @Autowired
+    private DbInitializer dbInitializer;
+
 
     private WebTestClient webTestClient;
     private UserRepository userRepository;
 
     @Autowired
-    public UserTest(WebTestClient webTestClient, UserRepository userRepository) {
+    public UserTest(WebTestClient webTestClient, UserRepository userRepository, DbInitializer dbInitializer) {
         this.webTestClient = webTestClient;
         this.userRepository = userRepository;
     }
 
+    @BeforeEach
+    public void setup() {
+        dbInitializer.initialize();
+    }
+
     @AfterEach
     public void resetData() {
-        userRepository.resetRepositoryData();
+        userRepository = new UserRepositoryStub();
     }
 
     @Test
@@ -54,11 +67,48 @@ public class UserTest {
                 .exchange().expectStatus().isOk()
                 .expectBody()
                 .json("""
-                  [
-                    {"user": {"name":"John Doe","age":25,"email":"john.doe@ucll.be","password":"john1234"},"publications":[{"title":"The Catcher in the Rye","author":"J.D. Salinger","isbn":"0123456","pubYear":1951,"availableCopies":4}],"startDate":"2026-03-04","endDate":"2026-03-25"},
-                    {"user":{"name":"John Doe","age":25,"email":"john.doe@ucll.be","password":"john1234"},"publications":[{"title":"1984","author":"George Orwell","isbn":"012587","pubYear":1949,"availableCopies":1}],"startDate":"2026-03-04","endDate":"2026-03-25"}
-                  ]
-                  """);
+                        
+                              [
+                             {
+                                 "user": {
+                                     "name": "John Doe",
+                                     "age": 25,
+                                     "email": "john.doe@ucll.be",
+                                     "password": "john1234"
+                                 },
+                                 "publications": [
+                                     {
+                                         "title": "The Catcher in the Rye",
+                                         "author": "J.D. Salinger",
+                                         "isbn": "0123456",
+                                         "pubYear": 1951,
+                                         "availableCopies": 4
+                                     }
+                                 ],
+                                 "startDate": "2026-03-27",
+                                 "endDate": "2026-04-17"
+                             },
+                             {
+                                 "user": {
+                                     "name": "John Doe",
+                                     "age": 25,
+                                     "email": "john.doe@ucll.be",
+                                     "password": "john1234"
+                                 },
+                                 "publications": [
+                                     {
+                                         "title": "1984",
+                                         "author": "George Orwell",
+                                         "isbn": "012587",
+                                         "pubYear": 1949,
+                                         "availableCopies": 1
+                                     }
+                                 ],
+                                 "startDate": "2026-03-27",
+                                 "endDate": "2026-04-17"
+                             }
+                         ]
+                        """);
     }
 
     @Test

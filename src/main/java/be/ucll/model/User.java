@@ -1,11 +1,21 @@
 package be.ucll.model;
 
-import jakarta.validation.constraints.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Objects;
 
+@Entity
+@Table(name = "users")
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -27,6 +37,9 @@ public class User {
         setAge(age);
         setEmail(email);
         setPassword(password);
+    }
+
+    protected User() {
     }
 
     public String getName() {

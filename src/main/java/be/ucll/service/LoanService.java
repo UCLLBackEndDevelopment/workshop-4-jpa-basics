@@ -21,7 +21,7 @@ public class LoanService {
     }
 
     public List<Loan> getLoansByUser(String email, boolean onlyActive) {
-        if (!userRepository.userExists(email)) {
+        if (!userRepository.existsByEmail(email)) {
             throw new RuntimeException("User not found.");
         }
 

@@ -2,9 +2,8 @@ package be.ucll.unit.service;
 
 import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
-import be.ucll.repository.UserRepository;
-import be.ucll.service.LoanService;
 import be.ucll.service.UserService;
+import be.ucll.unit.repository.UserRepositoryStub;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,11 +15,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserServiceTest {
 
     private UserService userService;
-    private UserRepository userRepository;
+    private UserRepositoryStub userRepository;
 
     @BeforeEach
     public void setUp() {
-        userRepository = new UserRepository();
+        userRepository = new UserRepositoryStub();
         userService = new UserService(userRepository, new LoanRepository());
     }
 
@@ -30,8 +29,8 @@ public class UserServiceTest {
         List<User> result = userService.getAllUsers();
 
         // then
-        assertEquals(userRepository.getUsers().size(), result.size());
-        assertTrue(userRepository.getUsers().containsAll(result));
+        assertEquals(userRepository.findAll().size(), result.size());
+        assertTrue(userRepository.findAll().containsAll(result));
     }
 
     @Test
@@ -263,8 +262,8 @@ public class UserServiceTest {
         userService.deleteUser(existingEmail);
 
         // then
-        assertFalse(userRepository.userExists(existingEmail));
-        assertEquals(4, userRepository.getUsers().size());
+        assertFalse(userRepository.existsByEmail(existingEmail));
+        assertEquals(4, userRepository.findAll().size());
     }
 
     @Test

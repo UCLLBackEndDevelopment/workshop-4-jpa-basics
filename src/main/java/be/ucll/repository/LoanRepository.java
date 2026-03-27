@@ -1,6 +1,7 @@
 package be.ucll.repository;
 
 import be.ucll.model.Loan;
+import be.ucll.model.User;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -17,15 +18,22 @@ public class LoanRepository {
     }
 
     public void resetRepositoryData() {
-        loans = new ArrayList<>(List.of(new Loan(new UserRepository().getUsers().get(0),
+        ArrayList<User> users = new ArrayList<>(List.of(
+                new User("John Doe", 25, "john.doe@ucll.be", "john1234"),
+                new User("Jane Toe", 30, "jane.toe@ucll.be", "jane1234"),
+                new User("Jack Doe", 5, "jack.doe@ucll.be", "jack1234"),
+                new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
+                new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234")
+        ));
+        loans = new ArrayList<>(List.of(new Loan(users.get(0),
                         List.of(new PublicationRepository().getBooks().get(0)), LocalDate.now()),
-                new Loan(new UserRepository().getUsers().get(1),
+                new Loan(users.get(1),
                         List.of(new PublicationRepository().getBooks().get(0)),
                         LocalDate.now()),
-                new Loan(new UserRepository().getUsers().get(1),
+                new Loan(users.get(1),
                         List.of(new PublicationRepository().getBooks().get(1)),
                         LocalDate.now().minusDays(5)),
-                new Loan(new UserRepository().getUsers().get(0),
+                new Loan(users.get(0),
                         List.of(new PublicationRepository().getBooks().get(1)),
                         LocalDate.now())));
     }

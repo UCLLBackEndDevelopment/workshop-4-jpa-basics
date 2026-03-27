@@ -24,7 +24,7 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        return userRepository.getUsers();
+        return userRepository.findAll();
     }
 
     public List<User> getUsersByName(String name) {
@@ -32,7 +32,7 @@ public class UserService {
             return getAllUsers();
         };
 
-        List<User> result = userRepository.getUsersByName(name);
+        List<User> result = userRepository.findByName(name);
         if (result.isEmpty()) {
             throw new RuntimeException("No users found with the specified name");
         }
@@ -41,7 +41,7 @@ public class UserService {
     }
 
     public List<User> getAllAdultUsers() {
-        return userRepository.usersOlderThan(18);
+        return userRepository.findByAgeGreaterThan(17);
     }
 
     public List<User> getUsersBetweenAge(int min, int max) {
@@ -53,11 +53,11 @@ public class UserService {
             throw new RuntimeException("Invalid age range. Age must be between 0 and 150.");
         }
 
-        return userRepository.getUsersBetweenAge(min, max);
+        return userRepository.findByAgeBetween(min, max);
     }
 
     public User addUser(User user) {
-        if (userRepository.userExists(user.getEmail())) {
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("User already exists.");
         }
         return userRepository.save(user);
@@ -77,7 +77,7 @@ public class UserService {
         user.setPassword(updatedUser.getPassword());
         user.setEmail(updatedUser.getEmail());
 
-        return user;
+        return userRepository.save(user);
     }
 
     public void deleteUser(String email) {
@@ -95,5 +95,16 @@ public class UserService {
 
         loanRepository.deleteLoansByUserEmail(email);
         userRepository.delete(user);
+    }
+
+    public User getOldestUser() {
+        List<User> users = userRepository.findAllByOrderByAgeDesc();
+
+        if (users == null || users.isEmpty()) {
+            throw new RuntimeException("No oldest user found.");
+        }
+
+        return users.get(0);
+
     }
 }
