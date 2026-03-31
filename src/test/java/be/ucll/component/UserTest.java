@@ -57,7 +57,7 @@ public class UserTest {
 
     @Test
     public void givenUserWithLoans_whenGettingLoansOfUser_thenLoansAreReturned() {
-        LocalDate startDate = LocalDate.now();
+        LocalDate startDate = LocalDate.now().minusDays(22);
         LocalDate endDate = startDate.plusWeeks(3);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 

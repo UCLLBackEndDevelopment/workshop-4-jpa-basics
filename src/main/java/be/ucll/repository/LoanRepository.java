@@ -25,23 +25,25 @@ public class LoanRepository {
                 new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
                 new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234")
         ));
+
         loans = new ArrayList<>(List.of(new Loan(users.get(0),
-                        List.of(new PublicationRepository().getBooks().get(0)), LocalDate.now()),
+                        List.of(new PublicationRepository().getBooks().get(0)), LocalDate.now().minusDays(22)),
                 new Loan(users.get(1),
                         List.of(new PublicationRepository().getBooks().get(0)),
-                        LocalDate.now()),
+                        LocalDate.now().minusDays(22)),
                 new Loan(users.get(1),
                         List.of(new PublicationRepository().getBooks().get(1)),
                         LocalDate.now().minusDays(5)),
                 new Loan(users.get(0),
                         List.of(new PublicationRepository().getBooks().get(1)),
-                        LocalDate.now())));
+                        LocalDate.now().minusDays(22))));
     }
 
     public List<Loan> getLoansByUser(String email, boolean onlyActive) {
         return loans.stream()
                 .filter(loan -> loan.getUser().getEmail().equals(email))
-                .filter(loan -> !onlyActive || loan.getStartDate().isBefore(LocalDate.now()) && LocalDate.now().isBefore(loan.getEndDate()))
+                .filter(loan -> !onlyActive || ((loan.getStartDate().isBefore(LocalDate.now()) || loan.getStartDate().equals(LocalDate.now()))
+                        && (LocalDate.now().isBefore(loan.getEndDate()) || LocalDate.now().equals(loan.getEndDate()))))
                 .toList();
     }
 
