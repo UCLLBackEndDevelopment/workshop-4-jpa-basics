@@ -3,8 +3,6 @@ package be.ucll.component;
 import be.ucll.model.User;
 import be.ucll.repository.DbInitializer;
 import be.ucll.repository.UserRepository;
-import be.ucll.unit.repository.UserRepositoryStub;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +11,9 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -36,11 +37,6 @@ public class UserTest {
         dbInitializer.initialize();
     }
 
-    @AfterEach
-    public void resetData() {
-        userRepository = new UserRepositoryStub();
-    }
-
     @Test
     public void givenUsers_whenGetUsers_thenUsersAreReturned() {
         webTestClient
@@ -61,12 +57,16 @@ public class UserTest {
 
     @Test
     public void givenUserWithLoans_whenGettingLoansOfUser_thenLoansAreReturned() {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusWeeks(3);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         webTestClient
                 .get()
                 .uri("/users/john.doe@ucll.be/loans?onlyActive=false")
                 .exchange().expectStatus().isOk()
                 .expectBody()
-                .json("""
+                .json(String.format("""
                         
                               [
                              {
@@ -85,8 +85,8 @@ public class UserTest {
                                          "availableCopies": 4
                                      }
                                  ],
-                                 "startDate": "2026-03-27",
-                                 "endDate": "2026-04-17"
+                                 "startDate": "%s",
+                                 "endDate": "%s"
                              },
                              {
                                  "user": {
@@ -104,11 +104,11 @@ public class UserTest {
                                          "availableCopies": 1
                                      }
                                  ],
-                                 "startDate": "2026-03-27",
-                                 "endDate": "2026-04-17"
+                                 "startDate": "%s",
+                                 "endDate": "%s"
                              }
                          ]
-                        """);
+                        """, formatter.format(startDate), formatter.format(endDate), formatter.format(startDate), formatter.format(endDate)));
     }
 
     @Test
@@ -170,4 +170,3 @@ public class UserTest {
         Assertions.assertTrue(userRepository.findByEmail("john.doe@ucll.be").isEmpty());
     }
 }
-

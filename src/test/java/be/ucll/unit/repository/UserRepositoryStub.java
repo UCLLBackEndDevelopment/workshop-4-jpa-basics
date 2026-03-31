@@ -69,6 +69,12 @@ public class UserRepositoryStub implements UserRepository {
     }
 
     @Override
+    public List<User> findByNameContainingAndAgeGreaterThan(String chars, int age) {
+        return users.stream()
+                .filter(user -> user.getName().contains(chars) && user.getAge() > age).toList();
+    }
+
+    @Override
     public void delete(User entity) {
         users.remove(entity);
     }
