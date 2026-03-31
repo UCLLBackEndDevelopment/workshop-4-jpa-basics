@@ -10,6 +10,9 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 public class UserTest {
@@ -48,17 +51,58 @@ public class UserTest {
 
     @Test
     public void givenUserWithLoans_whenGettingLoansOfUser_thenLoansAreReturned() {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusWeeks(3);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         webTestClient
                 .get()
                 .uri("/users/john.doe@ucll.be/loans?onlyActive=false")
                 .exchange().expectStatus().isOk()
                 .expectBody()
-                .json("""
-                  [
-                    {"user": {"name":"John Doe","age":25,"email":"john.doe@ucll.be","password":"john1234"},"publications":[{"title":"The Catcher in the Rye","author":"J.D. Salinger","isbn":"0123456","pubYear":1951,"availableCopies":4}],"startDate":"2026-03-04","endDate":"2026-03-25"},
-                    {"user":{"name":"John Doe","age":25,"email":"john.doe@ucll.be","password":"john1234"},"publications":[{"title":"1984","author":"George Orwell","isbn":"012587","pubYear":1949,"availableCopies":1}],"startDate":"2026-03-04","endDate":"2026-03-25"}
-                  ]
-                  """);
+                .json(String.format("""
+                        
+                              [
+                             {
+                                 "user": {
+                                     "name": "John Doe",
+                                     "age": 25,
+                                     "email": "john.doe@ucll.be",
+                                     "password": "john1234"
+                                 },
+                                 "publications": [
+                                     {
+                                         "title": "The Catcher in the Rye",
+                                         "author": "J.D. Salinger",
+                                         "isbn": "0123456",
+                                         "pubYear": 1951,
+                                         "availableCopies": 4
+                                     }
+                                 ],
+                                 "startDate": "%s",
+                                 "endDate": "%s"
+                             },
+                             {
+                                 "user": {
+                                     "name": "John Doe",
+                                     "age": 25,
+                                     "email": "john.doe@ucll.be",
+                                     "password": "john1234"
+                                 },
+                                 "publications": [
+                                     {
+                                         "title": "1984",
+                                         "author": "George Orwell",
+                                         "isbn": "012587",
+                                         "pubYear": 1949,
+                                         "availableCopies": 1
+                                     }
+                                 ],
+                                 "startDate": "%s",
+                                 "endDate": "%s"
+                             }
+                         ]
+                        """, formatter.format(startDate), formatter.format(endDate), formatter.format(startDate), formatter.format(endDate)));
     }
 
     @Test
